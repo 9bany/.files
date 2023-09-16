@@ -17,7 +17,7 @@ macos: sudo core-macos packages link
 
 linux: core-linux link
 
-core-macos: brew bash git npm ruby rust
+core-macos: brew bash git npm ruby rust go
 
 core-linux:
 	apt-get update
@@ -80,6 +80,8 @@ ruby: brew
 
 rust: brew
 	$(BIN)/brew install rust
+go: 
+	$(BIN)/brew install go
 
 brew-packages: brew
 	$(BIN)/brew bundle --file=$(DOTFILES_DIR)/install/Brewfile || true

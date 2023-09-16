@@ -38,6 +38,7 @@ brew "fnm"
 brew "gh"
 brew "python"
 brew "rust"
+brew "go"
 brew "shellcheck"
 
 # media
