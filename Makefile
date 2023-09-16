@@ -17,7 +17,7 @@ macos: sudo core-macos packages link
 
 linux: core-linux link
 
-core-macos: brew bash git npm ruby rust go
+core-macos: brew bash git npm ruby rust go gvm
 
 core-linux:
 	apt-get update
@@ -82,6 +82,9 @@ rust: brew
 	$(BIN)/brew install rust
 go: 
 	$(BIN)/brew install go
+
+gvm: 
+	bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
 
 brew-packages: brew
 	$(BIN)/brew bundle --file=$(DOTFILES_DIR)/install/Brewfile || true
