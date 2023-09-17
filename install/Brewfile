@@ -1,6 +1,9 @@
 tap "homebrew/bundle"
 tap "lotyp/homebrew-formulae"
 
+# editor
+brew emacs
+
 # core/dotfiles
 brew "bats-core"
 brew "coreutils"
