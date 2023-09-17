@@ -17,7 +17,7 @@ macos: sudo core-macos packages link
 
 linux: core-linux link
 
-core-macos: brew bash git npm ruby rust go gvm
+core-macos: brew bash git npm ruby rust go gvm emacs
 
 core-linux:
 	apt-get update
@@ -100,5 +100,7 @@ node-packages: npm
 rust-packages: rust
 	$(BIN)/cargo install $(shell cat install/Rustfile)
 
+emacs: 
+	git clone https://github.com/9bany/.emacs ~/.emacs.d
 test:
 	eval $$(fnm env); bats test
