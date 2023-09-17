@@ -13,7 +13,7 @@ It mainly targets macOS systems (should install on e.g. Ubuntu as well for many 
 - Updated macOS defaults
 - Well-organized and easy to customize
 - The installation and runcom setup is
-  [tested weekly on real Ubuntu and macOS machines](https://github.com/webpro/dotfiles/actions)
+  [tested weekly on real Ubuntu and macOS machines](https://github.com/9bany/.files/actions)
   (Big Sur/11, Monterey/12) using [a GitHub Action](./.github/workflows/dotfiles-installation.yml)
   (currently on Ventura/13 myself)
 - Supports both Apple Silicon (M1) and Intel chips
@@ -42,7 +42,7 @@ The Xcode Command Line Tools includes `git` and `make` (not available on stock m
 1. Install this repo with `curl` available:
 
 ```bash
-bash -c "`curl -fsSL https://raw.githubusercontent.com/webpro/dotfiles/master/remote-install.sh`"
+bash -c "`curl -fsSL https://raw.githubusercontent.com/9bany/.files/master/remote-install.sh`"
 ```
 
 This will clone or download this repo to `~/.dotfiles` (depending on the availability of `git`, `curl` or `wget`).
@@ -50,7 +50,7 @@ This will clone or download this repo to `~/.dotfiles` (depending on the availab
 1. Alternatively, clone manually into the desired location:
 
 ```bash
-git clone https://github.com/webpro/dotfiles.git ~/.dotfiles
+git clone https://github.com/9bany/.files.git ~/.dotfiles
 ```
 
 Use the [Makefile](./Makefile) to install the [packages listed above](#packages-overview), and symlink
@@ -62,7 +62,7 @@ make
 ```
 
 The installation process in the Makefile is tested on every push and every week in this
-[GitHub Action](https://github.com/webpro/dotfiles/actions).
+[GitHub Action](https://github.com/9bany/.files/actions).
 
 ## Post-Installation
 
