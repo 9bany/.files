@@ -13,13 +13,11 @@ export ACCEPT_EULA=Y
 
 all: $(OS)
 
-macos: sudo core-macos tools packages link
+macos: sudo core-macos packages link
 
 linux: core-linux link
 
 core-macos: brew bash git npm ruby rust go gvm
-
-tools: docker
 
 core-linux:
 	apt-get update
@@ -88,8 +86,6 @@ go:
 gvm: 
 	bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
 
-docker: 
-	sh ./get-docker.sh
 brew-packages: brew
 	$(BIN)/brew bundle --file=$(DOTFILES_DIR)/install/Brewfile || true
 
