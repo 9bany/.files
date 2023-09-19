@@ -3,15 +3,21 @@ tap "homebrew/cask-fonts"
 tap "homebrew/cask-versions"
 
 cask "emacs"
-cask "docker"
-cask "dropbox"
-cask "font-fira-code"
-cask "arc"
-cask "hammerspoon"
-cask "maccy"
-cask "raycast"
-cask "slack"
+cask "obsidian"
 cask "visual-studio-code"
 cask "notion"
-cask "tunnelblick"
+
+cask "arc"
+cask "slack"
 cask "telegram"
+
+cask "raycast"
+
+cask "docker"
+cask "dropbox"
+
+cask "font-fira-code"
+
+cask "hammerspoon"
+cask "maccy"
+cask "tunnelblick"
