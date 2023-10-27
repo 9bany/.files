@@ -1,0 +1,202 @@
+;;; gc-buffers.el --- Kill garbage buffers automatically -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2022 Akib Azmain Turja.
+
+;; Author: Akib Azmain Turja <akib@disroot.org>
+;; Created: 2022-05-20
+;; Version: 1.0
+;; Package-Requires: ((emacs "24.1"))
+;; Keywords: internal
+;; Homepage: https://codeberg.org/akib/emacs-gc-buffers
+
+;; This file is not part of GNU Emacs.
+
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; For a full copy of the GNU General Public License
+;; see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; There are many packages that create temporary buffers but don't kill
+;; those buffers, either because they don't do that or any unhandled error
+;; prevents it from doing that.  Over time, these "garbage" buffer can be
+;; pile up and eat up your memory.  For example, there were 1359 garbage
+;; buffers created by Flymake Emacs Lisp byte compiler backend over 5 days.
+
+;; This package's purpose is to clear them automatically, so you can use
+;; your memory to edit more files, run more commands and to use other
+;; programs.
+
+;; Clean garbage buffers with M-x gc-buffers.  To enable automatically
+;; doing this, do M-x gc-buffers-mode.
+
+;; Don't let buggy packages to make Emacs "Emacs Makes A Computer Slow"!
+
+;;; Code:
+
+;;;; User Options:
+
+(defgroup gc-buffers nil
+  "Kill garbage buffers automatically."
+  :group 'internal
+  :link '(url-link "https://codeberg.org/akib/emacs-gc-buffers")
+  :prefix "gc-buffers-")
+
+(defcustom gc-buffers-functions
+  (list #'gc-buffers-elisp-flymake
+        #'gc-buffers-elisp-flymake-stderr
+        #'gc-buffers-flymake-diagnostics
+        #'gc-buffers-helpful-all
+        #'gc-buffers-async-shell-command-buffer)
+  "Functions to find garbage buffers.
+
+Each function is called with the buffer to test, and if any of the
+functions returns t, kill that buffer.  The function may also return a
+function, then that function is called with the buffer to kill or whatever
+it wants.  The functions should not have any side-effect.
+
+Warning: Putting wrong functions here may delete working buffers.  For
+example, never put `always' here, that would delete all buffers."
+  :type 'hook
+  :options (list #'gc-buffers-elisp-flymake
+                 #'gc-buffers-elisp-flymake-stderr
+                 #'gc-buffers-flymake-diagnostics
+                 #'gc-buffers-flymake-diagnostics-all
+                 #'gc-buffers-helpful-all
+                 #'gc-buffers-async-shell-command-buffer))
+
+(defcustom gc-buffers-ignore-functions (list #'gc-buffers-ignore-visible)
+  "Functions to ignore buffers while killing.
+
+Each function is called with the buffer to test, and if any of the
+functions returns non-nil, don't kill that buffer.  The functions should
+not have any side-effect."
+  :type 'hook
+  :options (list #'gc-buffers-ignore-visible))
+
+(defcustom gc-buffers-delay 1800
+  "Kill garbage buffers after idling for this many seconds."
+  :type 'number)
+
+;;;; Core functions:
+
+;;;###autoload
+(defun gc-buffers ()
+  "Kill garbage buffers."
+  (interactive)
+  (while-no-input
+    (let ((inhibit-quit (called-interactively-p 'interactive))
+          (kill-buffer-query-functions nil)
+          (count 0))
+      (dolist (buffer (buffer-list))
+        (when (not (run-hook-with-args-until-success
+                    'gc-buffers-ignore-functions buffer))
+          (let ((kill-fn (ignore-errors
+                           (run-hook-with-args-until-success
+                            'gc-buffers-functions buffer))))
+            (when kill-fn
+              (funcall (if (eq kill-fn t)
+                           #'kill-buffer
+                         kill-fn)
+                       buffer)
+              (setq count (1+ count))))))
+      (when (called-interactively-p 'interactive)
+        (message "%s garbage buffer%s killed"
+                 (if (zerop count) "No" (number-to-string count))
+                 (if (> count 1) "s" ""))))))
+
+;;;; Mode:
+
+(defvar gc-buffers--idle-timer nil)
+
+;;;###autoload
+(define-minor-mode gc-buffers-mode
+  "Toggle killing garbage buffers automatically."
+  :global t
+  :lighter " GC-Buffers"
+  (when gc-buffers--idle-timer
+    (cancel-timer gc-buffers--idle-timer)
+    (setq gc-buffers--idle-timer nil))
+  (when gc-buffers-mode
+    (setq gc-buffers--idle-timer
+          (run-with-idle-timer gc-buffers-delay t #'gc-buffers))))
+
+;;;; Buffer test functions:
+
+(defun gc-buffers-elisp-flymake (buffer)
+  "Kill garbage buffers generated by `elisp-flymake-byte-compile'.
+
+Check if BUFFER is a garbage generated by `elisp-flymake-byte-compile'."
+  (and (string-match-p (rx string-start " *elisp-flymake-byte-compile*"
+                           (zero-or-more not-newline)
+                           string-end)
+                       (buffer-name buffer))
+       (not (get-buffer-process buffer))))
+
+(defun gc-buffers-elisp-flymake-stderr (buffer)
+  "Kill the stderr buffer generated by `elisp-flymake-byte-compile'.
+
+Check if the name of BUFFER is
+ \" *stderr of elisp-flymake-byte-compile*\"."
+  (string= (buffer-name buffer) " *stderr of elisp-flymake-byte-compile*"))
+
+(defun gc-buffers-flymake-diagnostics (buffer)
+  "Kill garbage Flymake diagnostics buffers.
+
+A diagnostics buffer is considered garbage when the source buffer is
+killed.
+
+Check if BUFFER is a Flymake diagnostics buffer of a killed buffer."
+  (and (eq (buffer-local-value 'major-mode buffer)
+           'flymake-diagnostics-buffer-mode)
+       (not (buffer-live-p (buffer-local-value
+                            'flymake--diagnostics-buffer-source buffer)))))
+
+(defun gc-buffers-flymake-diagnostics-all (buffer)
+  "Kill all Flymake diagnostics buffers.
+
+You would probably want to add `gc-buffers-ignore-visible' to ignore
+visible functions, otherwise it'll kill all Flymake diagnostics buffer.
+
+Check if the major mode of BUFFER is `flymake-diagnostics-buffer-mode'."
+  (eq (buffer-local-value 'major-mode buffer)
+      'flymake-diagnostics-buffer-mode))
+
+(defun gc-buffers-helpful-all (buffer)
+  "Kill garbage (all) Helpful buffers.
+
+Check if the major mode of BUFFER is `helpful-mode'."
+  (eq (buffer-local-value 'major-mode buffer) 'helpful-mode))
+
+(defun gc-buffers-async-shell-command-buffer (buffer)
+  "Kill garbage *Async Shell Command* buffer.
+
+A buffer is considered garbage if it has no process.
+
+Check if the name of BUFFER begins with *Async Shell Command* and it has
+no process."
+  (and (string-match-p (rx string-start "*Async Shell Command*"
+                           (zero-or-more not-newline)
+                           string-end)
+                       (buffer-name buffer))
+       (not (get-buffer-process buffer))))
+
+;;;; Ignore functions:
+
+(defun gc-buffers-ignore-visible (buffer)
+  "Ignore visible buffers.
+
+Check if BUFFER is visible."
+  (get-buffer-window buffer 'all-frames))
+
+(provide 'gc-buffers)
+;;; gc-buffers.el ends here

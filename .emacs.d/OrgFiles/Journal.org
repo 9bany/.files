@@ -1,0 +1,63 @@
+
+
+* 2020
+
+** 2020-10 October
+
+*** 2020-10-09 Friday
+
+**** 10:08 AM - Journal                                          :journal:
+:LOGBOOK:
+CLOCK: [2020-10-09 Fri 10:08]--[2020-10-09 Fri 10:08] =>  0:00
+:END:
+
+Today was a great day!  We learned more about Org Mode.
+
+* 2023
+** 2023-09 September
+*** 2023-09-26 Tuesday
+
+**** 10:43 AM - Journal                                             :journal:
+:LOGBOOK:
+CLOCK: [2023-09-26 Tue 10:43]--[2023-09-26 Tue 10:44] =>  0:01
+:END:
+
+**** 10:44 AM - Journal                                             :journal:
+:LOGBOOK:
+CLOCK: [2023-09-26 Tue 10:44]--[2023-09-26 Tue 10:44] =>  0:00
+:END:
+
+**** 10:44 AM - Journal                                             :journal:
+:LOGBOOK:
+CLOCK: [2023-09-26 Tue 10:44]--[2023-09-26 Tue 10:44] =>  0:00
+:END:
+
+*** 2023-09-27 Wednesday
+
+**** 11:01 AM - Journal                                             :journal:
+:LOGBOOK:
+CLOCK: [2023-09-27 Wed 11:01]--[2023-09-27 Wed 11:03] =>  0:02
+:END:
+
+*** 2023-09-28 Thursday
+
+**** 10:49 AM - Journal                                             :journal:
+:LOGBOOK:
+CLOCK: [2023-09-28 Thu 10:49]--[2023-09-28 Thu 13:39] =>  2:50
+:END:
+
+** 2023-10 October
+*** 2023-10-01 Sunday
+
+**** 08:04 AM - Journal                                             :journal:
+:LOGBOOK:
+CLOCK: [2023-10-01 Sun 08:04]--[2023-10-01 Sun 10:41] =>  2:37
+:END:
+
+**** 11:07 AM - Journal                                             :journal:
+:LOGBOOK:
+CLOCK: [2023-10-01 Sun 11:07]--[2023-10-01 Sun 16:48] =>  5:41
+:END:
+
+
+
