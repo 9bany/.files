@@ -32,7 +32,6 @@ if [ -f '/Users/eban.y/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/User
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/eban.y/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/eban.y/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
-
 monitor() (
     # extract params
     title=$1
