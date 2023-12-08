@@ -44,3 +44,7 @@
 .monaco-workbench .part {
     height: 100% !important;
 }
+
+.monaco-list .monaco-scrollable-element>.scrollbar.vertical, .monaco-pane-view>.monaco-split-view2.vertical>.monaco-scrollable-element>.scrollbar.vertical {
+    display: none !important;
+}
