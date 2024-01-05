@@ -1,7 +1,16 @@
-fn main() {
-    let pattern = std::env::args().nth(1).expect("no pattern given");
-    let path = std::env::args().nth(2).expect("no path given");
+use clap::Parser;
 
-    println!("pattern: {:?}, path: {:?}", pattern, path)
+#[derive(Parser)]
+#[command(name = "bdot")]
+#[command(author = "Bany Y. <ybuoceban4569@gmail.com>")]
+#[command(version = "0.0.1")]
+#[command(about = "Dotfiles command line", long_about = None)]
+struct Cli {
+    #[arg(long)]
+    hey: String,
 }
 
+fn main() {
+    let cli = Cli::parse();
+    println!("Hey {}!!!", cli.hey);
+}
