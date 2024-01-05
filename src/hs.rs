@@ -1,6 +1,6 @@
-
 use clap::{Parser, Subcommand};
-// ec2.rs
+use crate::os::{OS, get_os};
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 #[command(propagate_version = true)]
@@ -11,13 +11,34 @@ pub(crate) struct Command {
 
 #[derive(Subcommand)]
 pub enum SCommands {
-  FooBar
+    Install
 }
 
 pub fn handle(e: SCommands) {
-    match e {
-        SCommands::FooBar => {
-            println!("this is foo-bar")
+    match get_os() {
+        OS::Mac => {
+            match e {
+                SCommands::Install => {
+                    println!("Run install brew");
+                    exec();
+                }
+            }
         }
-    }
+        _ => {
+            println!("hammerspoon only run on macos")
+        }
+        
+    }    
 }
+
+fn exec() {
+    use std::process::Command;
+    // /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    let _ = Command::new("/bin/bash")
+    .arg("-c")
+    .arg("$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
+    .output()
+    .expect("failed to execute process");
+
+}
+
