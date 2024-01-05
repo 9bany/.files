@@ -1,3 +1,4 @@
+mod hs;
 use clap::Parser;
 
 #[derive(Parser)]
@@ -5,12 +6,16 @@ use clap::Parser;
 #[command(author = "Bany Y. <ybuoceban4569@gmail.com>")]
 #[command(version = "0.0.1")]
 #[command(about = "Dotfiles command line", long_about = None)]
-struct Cli {
-    #[arg(long)]
-    hey: String,
+
+enum Cli {
+    HammerSpoon(hs::Command),
 }
 
 fn main() {
     let cli = Cli::parse();
-    println!("Hey {}!!!", cli.hey);
+    match cli {
+        Cli::HammerSpoon(c) => {
+            hs::handle(c.command);
+        }
+    }
 }
